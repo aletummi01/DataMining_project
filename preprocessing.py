@@ -43,7 +43,7 @@ def preprocessing():
     df["title_tokens"] = df["title_tokens"].apply(lambda x: [lemmatizer.lemmatize(word) for word in x])
     df["final_title"] = df["title_tokens"].apply(lambda x: " ".join(x))
     vectorizer_text = TfidfVectorizer(max_features=15000)
-    vectorizer_title = TfidfVectorizer(max_features=3000)
+    vectorizer_title = TfidfVectorizer(max_features=3000) #ok
     X_textfidf = vectorizer_text.fit_transform(df["final_text"])
     X_textfidf = normalize(X_textfidf)
     X_titlefidf = vectorizer_title.fit_transform(df["final_title"])
