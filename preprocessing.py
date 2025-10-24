@@ -26,7 +26,7 @@ def clean_text(text):
     text = re.sub(r'\s+', ' ', text).strip()           # spazi multipli
     return text
 
-def preprocessing():#funzione di preprocessing
+def preprocessing():#funzione di preprocessing del dataset
     name_file='/Users/aletummi/Desktop/fake_news_dataset/Dataset.csv'
     df=pd.read_csv(name_file)
     df["clean_title"] = df["title"].apply(clean_text)
