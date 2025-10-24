@@ -6,7 +6,6 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import normalize
-from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -32,19 +31,25 @@ def preprocessing():
     df=pd.read_csv(name_file)
     df["clean_title"] = df["title"].apply(clean_text)
     df["clean_text"] = df["text"].apply(clean_text)
-    df["tokens"] = df["clean_text"].apply(word_tokenize)
+    df["text_tokens"] = df["clean_text"].apply(word_tokenize)
     df = df.dropna(subset=['text', 'title', 'Class'])
     stop_words = set(stopwords.words('english')) 
-    df["tokens"] = df["tokens"].apply(lambda x: [word for word in x if word not in stop_words])
+    df["text_tokens"] = df["text_tokens"].apply(lambda x: [word for word in x if word not in stop_words])
     lemmatizer = WordNetLemmatizer()
-    df["tokens"] = df["tokens"].apply(lambda x: [lemmatizer.lemmatize(word) for word in x])
-    # ricompone i token in una stringa pulita (opzionale)
-    df["final_text"] = df["tokens"].apply(lambda x: " ".join(x))
-    vectorizer = TfidfVectorizer(max_features=45000)
-    X_tfidf = vectorizer.fit_transform(df["final_text"]).toarray()
-    X_tfidf = normalize(X_tfidf)
+    df["text_tokens"] = df["text_tokens"].apply(lambda x: [lemmatizer.lemmatize(word) for word in x])
+    df["final_text"] = df["text_tokens"].apply(lambda x: " ".join(x))
+    df["title_tokens"] = df["clean_title"].apply(word_tokenize)
+    df["title_tokens"] = df["title_tokens"].apply(lambda x: [word for word in x if word not in stop_words])
+    df["title_tokens"] = df["title_tokens"].apply(lambda x: [lemmatizer.lemmatize(word) for word in x])
+    df["final_title"] = df["title_tokens"].apply(lambda x: " ".join(x))
+    vectorizer_text = TfidfVectorizer(max_features=15000)
+    vectorizer_title = TfidfVectorizer(max_features=3000)
+    X_textfidf = vectorizer_text.fit_transform(df["final_text"])
+    X_textfidf = normalize(X_textfidf)
+    X_titlefidf = vectorizer_title.fit_transform(df["final_title"])
+    X_titlefidf = normalize(X_titlefidf)
     y = df["Class"].values if "Class" in df.columns else None
-    return X_tfidf, y, df[["title", "final_text", "Class"]], vectorizer
+    return X_textfidf, X_titlefidf, y, df[["final_title", "final_text", "Class"]], vectorizer_text, vectorizer_title
 
 
 def perform_eda(df, text_column="final_text", class_column="Class", n_top_words=20, n_top_ngrams=10):    
@@ -52,11 +57,9 @@ def perform_eda(df, text_column="final_text", class_column="Class", n_top_words=
     sns.countplot(x=class_column, data=df)
     plt.title("Distribuzione delle classi")
     plt.show()
-
+    #conto quanti dati ho per ogni classe
     print("\nConteggio per classe:")
     print(df[class_column].value_counts())
-    
-    # --- 2. Lunghezza articoli ---
     df['num_words'] = df[text_column].apply(lambda x: len(str(x).split()))
     plt.figure(figsize=(8,5))
     sns.histplot(df, x='num_words', hue=class_column, bins=50, kde=True)
@@ -66,7 +69,7 @@ def perform_eda(df, text_column="final_text", class_column="Class", n_top_words=
     print("\nStatistiche lunghezza articoli per classe:")
     print(df.groupby(class_column)['num_words'].describe())
     
-    # --- 3. Top parole per classe ---
+    #Top parole per classe
     classes = df[class_column].unique()
     for cls in classes:
         words = " ".join(df[df[class_column]==cls][text_column]).split()
@@ -74,7 +77,7 @@ def perform_eda(df, text_column="final_text", class_column="Class", n_top_words=
         print(f"\nTop {n_top_words} parole per classe {cls}:")
         print(most_common)
     
-    # --- 4. Wordcloud per classe ---
+    #Wordcloud per classe
     plt.figure(figsize=(15,6))
     for i, cls in enumerate(classes):
         wc = WordCloud(width=800, height=400, background_color='white').generate(
@@ -86,23 +89,17 @@ def perform_eda(df, text_column="final_text", class_column="Class", n_top_words=
         plt.title(f"Wordcloud {cls}")
     plt.show()
     
-    # --- 5. Top bigram/trigram ---
+    #Top bigram/trigram
     for n in [2, 3]:
         vectorizer = CountVectorizer(ngram_range=(n, n), max_features=1000)
         X = vectorizer.fit_transform(df[text_column])
         total_counts = X.toarray().sum(axis=0)
         ngram_counts = list(zip(vectorizer.get_feature_names_out(), total_counts))
         ngram_counts = sorted(ngram_counts, key=lambda x: x[1], reverse=True)
-        
-        # stampa testuale
         print(f"\nTop {n_top_ngrams} {n}-gram nel dataset:")
         for ng, count in ngram_counts[:n_top_ngrams]:
             print(f"{ng}: {count}")
-        
-        # --- creazione dataframe per il grafico ---
         ngram_df = pd.DataFrame(ngram_counts[:n_top_ngrams], columns=[f"{n}-gram", "Frequenza"])
-        
-        # --- barplot ---
         plt.figure(figsize=(10,6))
         sns.barplot(data=ngram_df, x="Frequenza", y=f"{n}-gram", palette="mako")
         plt.title(f"Top {n_top_ngrams} {n}-gram più frequenti", fontsize=14)
@@ -110,9 +107,4 @@ def perform_eda(df, text_column="final_text", class_column="Class", n_top_words=
         plt.ylabel(f"{n}-gram")
         plt.tight_layout()
         plt.show()
-
-X,y,df_clean,vectorizer = preprocessing()
-perform_eda(df_clean)
-X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2, random_state=42,stratify=y)
-
 
