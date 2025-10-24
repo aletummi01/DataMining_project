@@ -26,7 +26,7 @@ def clean_text(text):
     text = re.sub(r'\s+', ' ', text).strip()           # spazi multipli
     return text
 
-def preprocessing():#funzione di preprocessing del dataset
+def preprocessing():#funzione di preprocessing del dataset di fake news
     name_file='/Users/aletummi/Desktop/fake_news_dataset/Dataset.csv'
     df=pd.read_csv(name_file)
     df["clean_title"] = df["title"].apply(clean_text)
@@ -108,3 +108,5 @@ def perform_eda(df, text_column="final_text", class_column="Class", n_top_words=
         plt.tight_layout()
         plt.show()
 
+def ciao():
+    return "ciao"
