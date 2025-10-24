@@ -26,7 +26,7 @@ def clean_text(text):
     text = re.sub(r'\s+', ' ', text).strip()           # spazi multipli
     return text
 
-def preprocessing():
+def preprocessing():#funzione di preprocessing
     name_file='/Users/aletummi/Desktop/fake_news_dataset/Dataset.csv'
     df=pd.read_csv(name_file)
     df["clean_title"] = df["title"].apply(clean_text)
@@ -43,7 +43,7 @@ def preprocessing():
     df["title_tokens"] = df["title_tokens"].apply(lambda x: [lemmatizer.lemmatize(word) for word in x])
     df["final_title"] = df["title_tokens"].apply(lambda x: " ".join(x))
     vectorizer_text = TfidfVectorizer(max_features=15000)
-    vectorizer_title = TfidfVectorizer(max_features=3000) #ok
+    vectorizer_title = TfidfVectorizer(max_features=3000) 
     X_textfidf = vectorizer_text.fit_transform(df["final_text"])
     X_textfidf = normalize(X_textfidf)
     X_titlefidf = vectorizer_title.fit_transform(df["final_title"])
