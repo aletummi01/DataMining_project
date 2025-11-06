@@ -35,10 +35,10 @@ feature_names = text_feature_names + title_feature_names
 if not model_loaded:
     rf = RandomForestClassifier(random_state=42, n_jobs=-1)
     param_grid = {
-        'n_estimators': [50, 100, 200],
-        'max_depth': [10, 20, 30],
-        'min_samples_split': [2, 3],
-        'min_samples_leaf': [1, 2],
+        'n_estimators': [300],
+        'max_depth': [20],
+        'min_samples_split': [2],
+        'min_samples_leaf': [1],
         'max_features': [None]
     }
 
@@ -63,7 +63,7 @@ if not model_loaded:
 else:
     best_model = last_best_model
 
-print("\n Genero spiegazioni LIME...")
+print("\n Genero spiegazioni LIME")
 
 if hasattr(X_test, "toarray"):
     X_test_dense = X_test.toarray()
