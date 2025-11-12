@@ -1,6 +1,5 @@
 import os
 import re
-import joblib
 import gdown
 import numpy as np
 import pandas as pd
@@ -11,18 +10,13 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from sklearn.metrics import confusion_matrix, classification_report,ConfusionMatrixDisplay
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, classification_report
+from sklearn.model_selection import train_test_split
 from sklearn.decomposition import TruncatedSVD
 from sklearn.preprocessing import StandardScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
-from xgboost import XGBClassifier
-from sklearn.model_selection import GridSearchCV
 from lime.lime_tabular import LimeTabularExplainer
 from wordcloud import WordCloud
-import warnings
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -49,7 +43,7 @@ def top_terms_per_component(svd, vectorizer, n_terms=5):
 
 def preprocessing(file_id="1JuANqhW7-YJ90_yO8vA9hMk569onLu3X", dataset_filename="dataset.csv",
                   test_size=0.2, val_size=0.2, random_state=42):
-    # Scarica dataset se non esiste
+    
     if not os.path.exists(dataset_filename):
         url = f"https://drive.google.com/uc?id={file_id}"
         print("Download dataset...")
@@ -58,14 +52,12 @@ def preprocessing(file_id="1JuANqhW7-YJ90_yO8vA9hMk569onLu3X", dataset_filename=
     df = pd.read_csv(dataset_filename)
     df = df.dropna(subset=['text', 'title', 'Class']).copy()
     
-    # Pulizia testi
     df["clean_title"] = df["title"].apply(clean_text)
     df["clean_text"] = df["text"].apply(clean_text)
     
     stop_words = set(stopwords.words('english'))
     lemmatizer = WordNetLemmatizer()
     
-    # Tokenizzazione e lemmatizzazione
     df["text_tokens"] = df["clean_text"].apply(word_tokenize)
     df["text_tokens"] = df["text_tokens"].apply(lambda x: [lemmatizer.lemmatize(w) for w in x if w not in stop_words])
     df["final_text"] = df["text_tokens"].apply(lambda x: " ".join(x))
@@ -74,7 +66,6 @@ def preprocessing(file_id="1JuANqhW7-YJ90_yO8vA9hMk569onLu3X", dataset_filename=
     df["title_tokens"] = df["title_tokens"].apply(lambda x: [lemmatizer.lemmatize(w) for w in x if w not in stop_words])
     df["final_title"] = df["title_tokens"].apply(lambda x: " ".join(x))
     
-    # Classi 0/1
     df["Class"] = df["Class"].astype(str).str.lower().map({"fake":0, "true":1})
     
     # Train/Test split
@@ -120,7 +111,7 @@ def preprocessing(file_id="1JuANqhW7-YJ90_yO8vA9hMk569onLu3X", dataset_filename=
     X_val_title_scaled = np.clip(scaler_title.transform(X_val_title_svd), -3, 3)
     X_test_title_scaled = np.clip(scaler_title.transform(X_test_title_svd), -3, 3)
     
-    # Stack finale
+    
     X_train = np.hstack([X_train_text_scaled, X_train_title_scaled])
     X_val = np.hstack([X_val_text_scaled, X_val_title_scaled])
     X_test = np.hstack([X_test_text_scaled, X_test_title_scaled])
@@ -187,106 +178,20 @@ def explain_with_lime(model, X_train, X_test, y_train, feature_names, sample_idx
     exp.save_to_file(output_file)
     print(f"Spiegazione LIME salvata in '{output_file}'")
 
-def train_random_forest(X_train, y_train, X_val=None, y_val=None,
-                        X_test=None, y_test=None, model_path="random_forest_finale.pkl"):
-    if os.path.exists(model_path):
-        print("Carico modello salvato...")
-        best_model = joblib.load(model_path)
-    else:
-        print("Addestramento modello Random Forest...")
-        rf = RandomForestClassifier(random_state=42, n_jobs=-1)
-        param_grid = {
-            'n_estimators':[300],
-            'max_depth':[13],
-            'min_samples_split':[7],
-            'min_samples_leaf':[3],
-            'max_features':[None]
-        }
-        grid = GridSearchCV(rf, param_grid, cv=5, scoring='accuracy', n_jobs=-1, verbose=0)
-        grid.fit(X_train, y_train)
-        best_model = grid.best_estimator_
-        joblib.dump(best_model, model_path)
-        print(f"Modello salvato in {model_path}")
+def _evaluate_model_metrics(model, X, y, set_name):
+    y_pred = model.predict(X)
     
-    # Accuracy train
-    y_train_pred = best_model.predict(X_train)
-    acc_train = accuracy_score(y_train, y_train_pred)
-    print(f"Accuracy TRAIN: {acc_train:.4f}")
-    
-    # Accuracy validation
-    if X_val is not None and y_val is not None:
-        y_val_pred = best_model.predict(X_val)
-        acc_val = accuracy_score(y_val, y_val_pred)
-        print(f"Accuracy VALIDATION: {acc_val:.4f}")
-    
-    # Accuracy test
-    if X_test is not None and y_test is not None:
-        y_test_pred = best_model.predict(X_test)
-        acc_test = accuracy_score(y_test, y_test_pred)
-        print(f"Accuracy TEST: {acc_test:.4f}")
+    acc = accuracy_score(y, y_pred)
+    prec = precision_score(y, y_pred, average='binary', zero_division=0)
+    rec = recall_score(y, y_pred, average='binary', zero_division=0)
+    f1 = f1_score(y, y_pred, average='binary', zero_division=0)
 
-    cm = confusion_matrix(y_test, y_test_pred)
-    cm_labels = ["Fake", "True"]
-    plt.figure(figsize=(6,5))
-    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=cm_labels, yticklabels=cm_labels)
-    plt.xlabel("Predicted Label")
-    plt.ylabel("True Label")
-    plt.title("Confusion Matrix - Random Forest")
-    plt.show()
+    print(f"\n--- Metriche {set_name} ---")
+    print(f"  Accuracy : {acc:.4f}")
+    print(f"  Precision: {prec:.4f}")
+    print(f"  Recall   : {rec:.4f}")
+    print(f"  F1-score : {f1:.4f}")
+    print(f"\nReport di classificazione {set_name}:")
+    print(classification_report(y, y_pred, target_names=["Fake", "True"], zero_division=0))
+    return y_pred
 
-
-    return best_model
-
-def xgboost(X_train, y_train, X_val, y_val, X_test, y_test, model_path="xgboost_gpu_finale.pkl"):
-    warnings.filterwarnings("ignore", category=UserWarning)
-    
-    if os.path.exists(model_path):
-        print("Carico modello XGBoost salvato...")
-        best_model = joblib.load(model_path)
-    else:
-        print("Addestramento XGBoost su GPU con early stopping...")
-
-        best_model = XGBClassifier(
-            objective='binary:logistic',
-            eval_metric='logloss',
-            use_label_encoder=False,
-            tree_method='hist',    
-            device='cuda',             
-            n_estimators=300,          # numero di alberi
-            max_depth=3,               # profondità moderata per ridurre overfitting
-            learning_rate=0.02,        # step di apprendimento
-            subsample=0.8,             # riduce overfitting
-            colsample_bytree=0.7,      # riduce overfitting
-            reg_alpha=1.5,             
-            reg_lambda=3.0,
-            random_state=42               
-        )
-
-        best_model.fit(
-            X_train, y_train,
-            eval_set=[(X_val, y_val)],
-            verbose=True
-        )
-
-        joblib.dump(best_model, model_path)
-        print(f"Modello XGBoost GPU salvato in {model_path}")
-
-    # Predizioni
-    y_train_pred = best_model.predict(X_train)
-    y_val_pred = best_model.predict(X_val)
-    y_test_pred = best_model.predict(X_test)
-
-    # Accuracy
-    print("\nRisultati Finali:")
-    print(f"Accuracy TRAIN: {accuracy_score(y_train, y_train_pred):.4f}")
-    print(f"Accuracy VAL:   {accuracy_score(y_val, y_val_pred):.4f}")
-    print(f"Accuracy TEST:  {accuracy_score(y_test, y_test_pred):.4f}")
-
-    # Confusion matrix
-    cm = confusion_matrix(y_test, y_test_pred)
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Fake", "True"])
-    disp.plot(cmap='Blues')
-    plt.title("Confusion Matrix - XGBoost GPU")
-    plt.show()
-
-    return best_model

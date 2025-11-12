@@ -1,4 +1,6 @@
-from functions import preprocessing, top_terms_per_component,train_random_forest,explain_with_lime,xgboost
+from functions import preprocessing, top_terms_per_component,explain_with_lime
+from models import train_random_forest,xgboost,distilbert
+import pandas as pd
 
 def main():
     # Preprocessing
@@ -10,10 +12,16 @@ def main():
     text_features = [f"TEXT_SVD{i+1}_({' '.join(words)})" for i, words in enumerate(text_top_terms)]
     title_features = [f"TITLE_SVD{i+1}_({' '.join(words)})" for i, words in enumerate(title_top_terms)]
     feature_names = text_features + title_features
-    
-    best_model = xgboost(X_train, y_train, X_val, y_val,X_test,y_test)
+    #best_model = train_random_forest(X_train, y_train, X_val, y_val,X_test,y_test)
+    #best_model = xgboost(X_train, y_train, X_val, y_val,X_test,y_test)
+    # Carica dataset pulito (deve avere 'title', 'text', 'label')
+    df = pd.read_csv("dataset.csv")
+    model_path="distilbert_finale"
+    # Suddivisione in train, validation, test
+    #df_train, df_temp = train_test_split(df, test_size=0.3, random_state=42, stratify=df["Class"])
+    #df_val, df_test = train_test_split(df_temp, test_size=0.5, random_state=42, stratify=df_temp["Class"])
 
-    explain_with_lime(best_model,X_train,X_test,y_train,feature_names,output_file="lime_explanation_xgboost.html")
+    best_model = distilbert(model_path=model_path)  # df passato alla funzione di training
 
 if __name__ == "__main__":
     main()

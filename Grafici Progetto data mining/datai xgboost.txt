@@ -1,0 +1,65 @@
+
+Accuratezze nested CV: [0.95510701 0.94797286 0.95493301 0.9500609  0.95127045]
+Media nested CV: 0.9519 ± 0.0028
+Test t (baseline = 0.5): t=324.9245, p=0.000000
+Risultato: Differenza statisticamente significativa.
+
+Carico modello XGBoost salvato...
+
+==================================================
+Valutazione finale del modello XGBoost
+==================================================
+
+--- Metriche TRAIN (Ottimistico) ---
+  Accuracy : 0.9600
+  Precision: 0.9505
+  Recall   : 0.9666
+  F1-score : 0.9585
+  ROC-AUC  : 0.9603
+
+Report di classificazione TRAIN (Ottimistico):
+              precision    recall  f1-score   support
+
+        Fake       0.97      0.95      0.96     15028
+        True       0.95      0.97      0.96     13706
+
+    accuracy                           0.96     28734
+   macro avg       0.96      0.96      0.96     28734
+weighted avg       0.96      0.96      0.96     28734
+
+
+--- Metriche VALIDATION ---
+  Accuracy : 0.9546
+  Precision: 0.9441
+  Recall   : 0.9618
+  F1-score : 0.9529
+  ROC-AUC  : 0.9549
+
+Report di classificazione VALIDATION:
+              precision    recall  f1-score   support
+
+        Fake       0.96      0.95      0.96      3757
+        True       0.94      0.96      0.95      3427
+
+    accuracy                           0.95      7184
+   macro avg       0.95      0.95      0.95      7184
+weighted avg       0.95      0.95      0.95      7184
+
+
+--- Metriche TEST (Finale) ---
+  Accuracy : 0.9522
+  Precision: 0.9430
+  Recall   : 0.9577
+  F1-score : 0.9503
+  ROC-AUC  : 0.9525
+
+
+Report di classificazione TEST (Finale):
+              precision    recall  f1-score   support
+
+        Fake       0.96      0.95      0.95      4696
+        True       0.94      0.96      0.95      4284
+
+    accuracy                           0.95      8980
+   macro avg       0.95      0.95      0.95      8980
+weighted avg       0.95      0.95      0.95      8980
