@@ -90,7 +90,8 @@ def train_random_forest(X_train, y_train, X_val=None, y_val=None,X_test=None, y_
 
     return best_model
 
-def xgboost(X_train, y_train, X_val, y_val, X_test, y_test, model_path="xgboost_gpu_finale.pkl", nested_cv=True):
+def xgboost(X_train, y_train, X_val, y_val, X_test, y_test,vectorizer_text=None, vectorizer_title=None,svd_text=None, svd_title=None,scaler_text=None, scaler_title=None,model_path="xgboost_gpu_finale.pkl",artifacts_path="xgboost_artifacts.pkl",nested_cv=True):
+    
     warnings.filterwarnings("ignore", category=UserWarning)
     
     base_model = XGBClassifier(
@@ -102,19 +103,17 @@ def xgboost(X_train, y_train, X_val, y_val, X_test, y_test, model_path="xgboost_
     )
 
     param_grid = {
-        "max_depth": [3, 4, 5],
-        "learning_rate": [0.02, 0.05],
-        "n_estimators": [300, 400],
-        "subsample": [0.5,0.8],
+        "max_depth": [5],
+        "learning_rate": [0.05],
+        "n_estimators": [400],
+        "subsample": [0.8],
         "colsample_bytree": [0.7],
         "reg_alpha": [1.5],
         "reg_lambda": [3.0]
     }
     
     if nested_cv:
-        print("\n" + "="*50)
         print("Eseguo Nested Cross-Validation (Stima della Generalizzazione)")
-        print("="*50)
         
         inner_cv = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
         outer_cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
@@ -134,50 +133,45 @@ def xgboost(X_train, y_train, X_val, y_val, X_test, y_test, model_path="xgboost_
         print(f"\nAccuratezze nested CV: {nested_scores}")
         print(f"Media nested CV: {mean_acc:.4f} ± {std_acc:.4f}")
 
-        # T-test
         t_stat, p_value = ttest_1samp(nested_scores, 0.5)
         print(f"Test t (baseline = 0.5): t={t_stat:.4f}, p={p_value:.6f}")
-        if p_value < 0.05:
-            print("Risultato: Differenza statisticamente significativa.")
-        else:
-            print("Risultato: Differenza NON significativa.")
+        print("Risultato:", "Differenza significativa" if p_value < 0.05 else "Differenza NON significativa")
     
     if os.path.exists(model_path):
         print("\nCarico modello XGBoost salvato")
         best_model = joblib.load(model_path)
     else:
         print("\nAddestramento e ottimizzazione iperparametri XGBoost (Grid Search)")
-
-        grid = GridSearchCV(
-            estimator=base_model,
-            param_grid=param_grid,
-            scoring="accuracy",
-            cv=3,
-            n_jobs=-1,
-            verbose=2 
-        )
-        
-        
-        print("Inizio Grid Search")
-        grid.fit(X_train, y_train) 
+        grid = GridSearchCV(base_model, param_grid, scoring="accuracy", cv=3, n_jobs=-1, verbose=2)
+        grid.fit(X_train, y_train)
         best_model = grid.best_estimator_
         print(f"\nIperparametri ottimali: {grid.best_params_}")
-
         joblib.dump(best_model, model_path)
         print(f"Modello XGBoost GPU salvato in {model_path}")
+    
     print("Valutazione finale del modello XGBoost")
     _evaluate_model_metrics(best_model, X_train, y_train, "TRAIN (Ottimistico)")
-
     if X_val is not None and y_val is not None:
         _evaluate_model_metrics(best_model, X_val, y_val, "VALIDATION")
-
     if X_test is not None and y_test is not None:
-        _evaluate_model_metrics(best_model, X_test, y_test, "TEST (Finale)", show_plot=True)
-
+        _evaluate_model_metrics(best_model, X_test, y_test, "TEST (Finale)")
+    
+    artifacts = {
+        "model": best_model,
+        "vectorizer_text": vectorizer_text,
+        "vectorizer_title": vectorizer_title,
+        "svd_text": svd_text,
+        "svd_title": svd_title,
+        "scaler_text": scaler_text,
+        "scaler_title": scaler_title
+    }
+    
+    joblib.dump(artifacts, artifacts_path)
+    print(f"Tutti gli artifacts salvati in {artifacts_path}")
+    
     return best_model
 
 def compute_metrics_distilbert(eval_pred):
-    """Calcola Accuratezza, Precisione, Recall e F1-score per Hugging Face Trainer."""
     logits, labels = eval_pred 
     predictions = np.argmax(logits, axis=-1)
     

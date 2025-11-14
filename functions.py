@@ -17,6 +17,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.feature_extraction.text import TfidfVectorizer
 from lime.lime_tabular import LimeTabularExplainer
 from wordcloud import WordCloud
+import pickle
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -118,7 +119,7 @@ def preprocessing(file_id="1JuANqhW7-YJ90_yO8vA9hMk569onLu3X", dataset_filename=
     
     df_clean = df[["final_title","final_text","Class"]].reset_index(drop=True)
     
-    return X_train, X_val, X_test, y_train.reset_index(drop=True), y_val.reset_index(drop=True), y_test.reset_index(drop=True), df_clean, vectorizer_text, vectorizer_title, svd_text, svd_title
+    return X_train, X_val, X_test, y_train.reset_index(drop=True), y_val.reset_index(drop=True), y_test.reset_index(drop=True), df_clean, vectorizer_text, vectorizer_title, svd_text, svd_title, scaler_text, scaler_title
 
 def perform_eda(df, text_column="final_text", class_column="Class", n_top_words=20, n_top_ngrams=10):
     plt.figure(figsize=(6,4))
@@ -195,3 +196,8 @@ def _evaluate_model_metrics(model, X, y, set_name):
     print(classification_report(y, y_pred, target_names=["Fake", "True"], zero_division=0))
     return y_pred
 
+def load_model(model_path):
+    """Carica il modello salvato in formato .pkl"""
+    with open(model_path, 'rb') as f:
+        model = pickle.load(f)
+    return model
