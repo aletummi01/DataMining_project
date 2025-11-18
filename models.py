@@ -15,13 +15,13 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_s
 from functions import _evaluate_model_metrics
 import numpy as np
 
-def train_random_forest(X_train, y_train, X_val=None, y_val=None,X_test=None, y_test=None, model_path="random_forest_finale.pkl",nested_cv=True):
+def random_forest(X_train, y_train, X_val=None, y_val=None,X_test=None, y_test=None, model_path="random_forest_finale.pkl",nested_cv=True):
 
     param_grid = {
-        'n_estimators': [100,200,300],
-        'max_depth': [2,3,4],
-        'min_samples_split': [1,2,3],
-        'min_samples_leaf': [1,2,3],
+        'n_estimators': [300],
+        'max_depth': [20],
+        'min_samples_split': [2],
+        'min_samples_leaf': [3],
         'max_features': [None] 
     }
     rf = RandomForestClassifier(random_state=42, n_jobs=-1)

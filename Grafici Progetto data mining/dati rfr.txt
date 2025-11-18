@@ -1,0 +1,126 @@
+PS C:\Users\aletu\Desktop\DataMining_project> & C:/Users/aletu/AppData/Local/Microsoft/WindowsApps/python3.12.exe c:/Users/aletu/Desktop/DataMining_project/models.py
+Traceback (most recent call last):
+  File "c:\Users\aletu\Desktop\DataMining_project\models.py", line 3, in <module>
+    import torch
+  File "C:\Users\aletu\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\torch\__init__.py", line 2475, in <module>
+    from torch import (
+  File "C:\Users\aletu\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\torch\export\__init__.py", line 64, in <module>
+    from .dynamic_shapes import Constraint, Dim, dims, ShapesCollection
+  File "C:\Users\aletu\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\torch\export\dynamic_shapes.py", line 23, in <module>
+    from .exported_program import ExportedProgram
+  File "C:\Users\aletu\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\torch\export\exported_program.py", line 26, in <module>
+    from torch._higher_order_ops.utils import autograd_not_implemented
+  File "C:\Users\aletu\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\torch\_higher_order_ops\__init__.py", line 1, in <module>
+    from torch._higher_order_ops.cond import cond
+  File "C:\Users\aletu\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\torch\_higher_order_ops\cond.py", line 6, in <module>
+    import torch._subclasses.functional_tensor
+  File "C:\Users\aletu\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\torch\_subclasses\functional_tensor.py", line 9, in <module>
+    import torch._inductor.config as inductor_config
+  File "C:\Users\aletu\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\torch\_inductor\config.py", line 1237, in <module>
+    from torch.utils._config_module import install_config_module
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1322, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 1262, in _find_spec
+  File "<frozen importlib._bootstrap_external>", line 1532, in find_spec
+  File "<frozen importlib._bootstrap_external>", line 1506, in _get_spec
+  File "<frozen importlib._bootstrap_external>", line 1605, in find_spec
+  File "<frozen importlib._bootstrap_external>", line 147, in _path_stat
+KeyboardInterrupt
+PS C:\Users\aletu\Desktop\DataMining_project> & C:/Users/aletu/AppData/Local/Microsoft/WindowsApps/python3.12.exe c:/Users/aletu/Desktop/DataMining_project/models.py
+2025-11-16 21:20:02.133863: I tensorflow/core/util/port.cc:113] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-11-16 21:20:05.164172: I tensorflow/core/util/port.cc:113] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING:tensorflow:From C:\Users\aletu\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+[nltk_data] Downloading package punkt to
+[nltk_data]     C:\Users\aletu\AppData\Roaming\nltk_data...
+[nltk_data]   Package punkt is already up-to-date!
+[nltk_data] Downloading package stopwords to
+[nltk_data]     C:\Users\aletu\AppData\Roaming\nltk_data...
+[nltk_data]   Package stopwords is already up-to-date!
+[nltk_data] Downloading package wordnet to
+[nltk_data]     C:\Users\aletu\AppData\Roaming\nltk_data...
+[nltk_data]   Package wordnet is already up-to-date!
+[nltk_data] Downloading package omw-1.4 to
+[nltk_data]     C:\Users\aletu\AppData\Roaming\nltk_data...
+[nltk_data]   Package omw-1.4 is already up-to-date!
+PS C:\Users\aletu\Desktop\DataMining_project> & C:/Users/aletu/AppData/Local/Microsoft/WindowsApps/python3.12.exe c:/Users/aletu/Desktop/DataMining_project/main.py
+[nltk_data] Downloading package punkt to
+[nltk_data]     C:\Users\aletu\AppData\Roaming\nltk_data...
+[nltk_data]   Package punkt is already up-to-date!
+[nltk_data] Downloading package stopwords to
+[nltk_data]     C:\Users\aletu\AppData\Roaming\nltk_data...
+[nltk_data]   Package stopwords is already up-to-date!
+[nltk_data] Downloading package wordnet to
+[nltk_data]     C:\Users\aletu\AppData\Roaming\nltk_data...
+[nltk_data]   Package wordnet is already up-to-date!
+[nltk_data] Downloading package omw-1.4 to
+[nltk_data]     C:\Users\aletu\AppData\Roaming\nltk_data...
+[nltk_data]   Package omw-1.4 is already up-to-date!
+2025-11-16 21:20:41.292631: I tensorflow/core/util/port.cc:113] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-11-16 21:20:41.965519: I tensorflow/core/util/port.cc:113] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING:tensorflow:From C:\Users\aletu\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+Eseguo Nested Cross-Validation (Stima della Generalizzazione)
+
+Accuratezze nested CV: [0.95180094 0.95319297 0.954759   0.95510701 0.95440306]
+Media nested CV: 0.9539 ± 0.0012
+Test t (baseline = 0.5): t=749.0423, p=0.000000
+Risultato: Differenza statisticamente significativa.
+Addestramento e ottimizzazione iperparametri Random Forest (Grid Search)...
+Fitting 3 folds for each of 1 candidates, totalling 3 fits
+[CV] END max_depth=20, max_features=None, min_samples_leaf=3, min_samples_split=2, n_estimators=300; total time= 3.5min
+[CV] END max_depth=20, max_features=None, min_samples_leaf=3, min_samples_split=2, n_estimators=300; total time= 3.5min
+[CV] END max_depth=20, max_features=None, min_samples_leaf=3, min_samples_split=2, n_estimators=300; total time= 3.5min
+
+Iperparametri ottimali: {'max_depth': 20, 'max_features': None, 'min_samples_leaf': 3, 'min_samples_split': 2, 'n_estimators': 300}
+Modello salvato in random_forest_finale.pkl
+
+--- Metriche TRAIN (Ottimistico) ---
+  Accuracy : 0.9946
+  Precision: 0.9948
+  Recall   : 0.9939
+  F1-score : 0.9943
+
+Report di classificazione TRAIN (Ottimistico):
+              precision    recall  f1-score   support
+
+        Fake       0.99      1.00      0.99     15028
+        True       0.99      0.99      0.99     13706
+
+    accuracy                           0.99     28734
+   macro avg       0.99      0.99      0.99     28734
+weighted avg       0.99      0.99      0.99     28734
+
+
+--- Metriche VALIDATION ---
+  Accuracy : 0.9601
+  Precision: 0.9618
+  Recall   : 0.9542
+  F1-score : 0.9580
+
+Report di classificazione VALIDATION:
+              precision    recall  f1-score   support
+
+        Fake       0.96      0.97      0.96      3757
+        True       0.96      0.95      0.96      3427
+
+    accuracy                           0.96      7184
+   macro avg       0.96      0.96      0.96      7184
+weighted avg       0.96      0.96      0.96      7184
+
+
+--- Metriche TEST (Finale) ---
+  Accuracy : 0.9562
+  Precision: 0.9570
+  Recall   : 0.9510
+  F1-score : 0.9540
+
+Report di classificazione TEST (Finale):
+              precision    recall  f1-score   support
+
+        Fake       0.96      0.96      0.96      4696
+        True       0.96      0.95      0.95      4284
+
+    accuracy                           0.96      8980
+   macro avg       0.96      0.96      0.96      8980
+weighted avg       0.96      0.96      0.96      8980
