@@ -18,10 +18,10 @@ import numpy as np
 def random_forest(X_train, y_train, X_val=None, y_val=None,X_test=None, y_test=None, model_path="random_forest_finale.pkl",nested_cv=True):
 
     param_grid = {
-        'n_estimators': [300],
-        'max_depth': [20],
-        'min_samples_split': [2],
-        'min_samples_leaf': [3],
+        'n_estimators': [100,200,300],
+        'max_depth': [20,30,40],
+        'min_samples_split': [2,3],
+        'min_samples_leaf': [3,5],
         'max_features': [None] 
     }
     rf = RandomForestClassifier(random_state=42, n_jobs=-1)
